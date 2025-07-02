@@ -29,7 +29,7 @@ export const EncounterNames: string[] = [
   "Qadim the Peerless",
   "Greer, the Blightbringer",
   "Decima, the Stormsinger",
-  "Ura, the Streamshrieker"
+  "Ura, the Steamshrieker"
 ];
 
 export const wingEncounterMapping: string[][] = [
@@ -40,5 +40,5 @@ export const wingEncounterMapping: string[][] = [
     ['Soulless Horror', 'River of Souls', 'Eye Of Darkness', 'Broken King', 'Eater Of Souls', 'Dhuum'],
     ['Conjured Amalgamate', 'Twin Largos', 'Qadim'],
     ['Cardinal Sabir', 'Cardinal Adina','Qadim the Peerless'],
-    ['Greer, the Blightbringer', 'Decima, the Stormsinger', 'Ura, the Streamshrieker']
+    ['Greer, the Blightbringer', 'Decima, the Stormsinger', 'Ura, the Steamshrieker']
 ];
