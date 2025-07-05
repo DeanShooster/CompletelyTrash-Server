@@ -104,7 +104,7 @@ router.post(`${routing.fullClear.baseURL}/update`, AdminAuth , async (req: Reque
             .setTimestamp();
 
         const channel = discordClient.channels.cache.get(`${process.env.DISCORD_COMPETITIVE_CHANNEL_ID}`);
-        if (channel?.isTextBased()) await (channel as DiscordTextChannel).send({content:"@everyone", embeds: [embed]});
+        if (channel?.isTextBased()) await (channel as DiscordTextChannel).send({embeds: [embed]});
         res.send({});
     }
     catch(e){
