@@ -1,18 +1,24 @@
-
-interface IGeneral{
+interface IRoute{
     baseURL: string;
+}
+
+interface IGeneral extends IRoute{
     patch: string;
     team: string;
 }
-
-interface IUserRoutes{
-    baseURL: string;
+interface IFullClear extends IRoute{
     fullClearStats: string;
 }
 
+interface IBenchmark extends IRoute{}
+
+interface IRecruitment extends IRoute{}
+
 interface IRouter{
     general: IGeneral;
-    fullClear: IUserRoutes;
+    fullClear: IFullClear;
+    benchmark: IBenchmark;
+    recruitment: IRecruitment;
 }
 
 export const routing: IRouter = {
@@ -24,5 +30,11 @@ export const routing: IRouter = {
     fullClear: {
         baseURL: '/fullclear',
         fullClearStats: '/fullclear/stats',
+    },
+    benchmark: {
+        baseURL: '/benchmark',
+    },
+    recruitment:{
+        baseURL: '/recruitment'
     }
 };

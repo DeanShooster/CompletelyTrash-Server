@@ -1,6 +1,7 @@
 import express from "express";
 import { Request, Response, NextFunction } from "express";
-import { discordClient } from "../..";
+
+import { discordClient } from "../../discord";
 import { EmbedBuilder } from 'discord.js';
 
 import FullClear from "../../database/models/FullClear";
@@ -85,27 +86,6 @@ router.post(`${routing.fullClear.fullClearStats}/logs`, AdminAuth , async (req: 
         if (channel?.isTextBased()) await (channel as DiscordTextChannel).send({embeds: [embed]});
 
         res.send({bossKillsData, errorLogs});
-    }
-    catch(e){
-        next(e);
-    }
-});
-
-router.post(`${routing.fullClear.baseURL}/update`, AdminAuth , async (req: Request, res: Response, next: NextFunction) =>{
-    try{
-        const { update } = req.body;
-
-        const embed = new EmbedBuilder()
-            .setColor(DISCORD_MESSAGES.COLOR)
-            .setTitle(DISCORD_MESSAGES.UPDATE_COMP)
-            .setURL(`${clientURL}/full-clear`)
-            .setDescription(`${update.join('\n')}`)
-            .setThumbnail(DISCORD_MESSAGES.THUMBNAIL_URL)
-            .setTimestamp();
-
-        const channel = discordClient.channels.cache.get(`${process.env.DISCORD_COMPETITIVE_CHANNEL_ID}`);
-        if (channel?.isTextBased()) await (channel as DiscordTextChannel).send({embeds: [embed]});
-        res.send({});
     }
     catch(e){
         next(e);

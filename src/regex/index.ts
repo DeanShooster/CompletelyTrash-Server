@@ -1,0 +1,1 @@
+export const isDpsReportUrl = /https:\/\/dps\.report\/[a-zA-Z0-9]+-\d{8}-\d{6}_[a-zA-Z]+/g;

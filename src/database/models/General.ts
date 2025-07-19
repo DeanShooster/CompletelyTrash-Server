@@ -4,7 +4,8 @@ import cTDBConnection from "../connection";
 
 const GeneralSchema = new mongoose.Schema({
     patches: [{ type: String }],
-    players: [{type: String}]
+    players: [{type: String}],
+    bossNames: [[{type: String}]]
 });
 
 const General = cTDBConnection.model("General", GeneralSchema);

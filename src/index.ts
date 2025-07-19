@@ -1,11 +1,12 @@
 import express from "express";
 import cors from "cors";
 
-import { Client, GatewayIntentBits } from 'discord.js';
-
 import { ErrorHandler } from "./middlewares/ErrorHandler";
 import GeneralRouter from './Routers/General/general.controller';
 import FullClearRouter from './Routers/FullClear/fullclear.controller';
+import BenchmarkRouter from './Routers/Benchmark/benchmark.controller';
+import RecruitmentRouter from './Routers/Recruitment/recruitment.controller';
+import { initDiscordBot } from "./discord";
 
 // Init
 const app = express();
@@ -18,13 +19,10 @@ app.use(express.json());
 // Routers
 app.use(GeneralRouter);
 app.use(FullClearRouter);
+app.use(BenchmarkRouter);
+app.use(RecruitmentRouter);
 app.use(ErrorHandler);
 
-// Discord Bot Connection
-export const discordClient = new Client({
-  intents: [ GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent ]
-});
-
-discordClient.login(process.env.DISCORD_BOT_TOKEN);
+initDiscordBot();
 
 app.listen(port, async () => console.log(`Server is online on Port: ${port}`));
