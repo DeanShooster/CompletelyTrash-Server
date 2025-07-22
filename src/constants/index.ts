@@ -75,5 +75,6 @@ export const wingEncounterMapping: string[][] = [
 
 export const accountIds: string[] = [
   'Verone.7652','Carphunter.6410', 'Pelda.1896', 'Ssalg.1205', 'Unholy Mox.1569', 
-  'Dean.3056', 'Steiner.8365', 'MoonMoon.3826', 'rikje.8315', 'pancakecookie.1357'
+  'Dean.3056', 'Steiner.8365', 'MoonMoon.3826', 'rikje.8315', 'pancakecookie.1357',
+  'Vertox.3697'
 ];
