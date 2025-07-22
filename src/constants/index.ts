@@ -32,6 +32,36 @@ export const EncounterNames: string[] = [
   "Ura, the Steamshrieker"
 ];
 
+export const Proffessions: string[] = [
+  'Berserker',
+  'Spellbreaker',
+  'Bladesworn',
+  'Dragonhunter',
+  'Firebrand',
+  'Willbender',
+  'Herald',
+  'Renegade',
+  'Vindicator',
+  'Druid',
+  'Soulbeast',
+  'Untamed',
+  'Daredevil',
+  'Deadeye',
+  'Specter',
+  'Scrapper',
+  'Holosmith',
+  'Mechanist',
+  'Reaper',
+  'Scourge',
+  'Harbinger',
+  'Tempest',
+  'Weaver',
+  'Catalyst',
+  'Chronomancer',
+  'Mirage',
+  'Virtuoso'
+];
+
 export const wingEncounterMapping: string[][] = [
     ['Vale Guardian', 'Gorseval the Multifarious', 'Sabetha the Saboteur'],
     ['Slothasor','Trio', 'Matthias Gabrel'],
@@ -45,5 +75,5 @@ export const wingEncounterMapping: string[][] = [
 
 export const accountIds: string[] = [
   'Verone.7652','Carphunter.6410', 'Pelda.1896', 'Ssalg.1205', 'Unholy Mox.1569', 
-  'Dean.3056', 'Steiner.8365', 'MoonMoon.3826', 'rikje.8315', 'Vera.6891'
+  'Dean.3056', 'Steiner.8365', 'MoonMoon.3826', 'rikje.8315', 'pancakecookie.1357'
 ];

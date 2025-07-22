@@ -35,8 +35,8 @@ router.post(`${routing.general.patch}`, AdminAuth , async (req: Request, res: Re
 
 router.post(`${routing.general.team}`, AdminAuth , async (req: Request, res: Response, next: NextFunction) => {
     try{
-        const { playerId , playerName } = req.body;
-        await General.updateOne({}, {$set: { [`players.${playerId}`]: playerName }});
+        const { playerId , playerName, accountName } = req.body;
+        await General.updateOne({}, {$set: { [`players.${playerId}`]: {name: playerName, accountName: accountName} }});
         res.send({success: true});
     }
     catch(e){

@@ -2,15 +2,25 @@ import axios from "axios";
 
 import { ENCOUNTER, ERROR_MESSAGES } from "../../constants/enum";
 import { accountIds } from "../../constants";
+import { benchmarkType } from "../../database/models/Benchmark";
 
 interface IBadGolemLog{
     log: string;
     reason: string;
 }
 
+interface IGooldGolemLog{
+    log: string;
+    isPower: boolean;
+    benchmark: number;
+    proffession: string;
+    name: string;
+    type: benchmarkType;
+}
+
 export const golemLogValidator = async (logs: string[]) => {
     try{
-        const goodLogs: string[] = [] , badLogs: IBadGolemLog[] = [];
+        const goodLogs: IGooldGolemLog[] = [] , badLogs: IBadGolemLog[] = [];
         for(const log of logs){
             try{
                 const response = await axios.get(log);
@@ -18,6 +28,8 @@ export const golemLogValidator = async (logs: string[]) => {
                 const jsonMatch = _logData.match(/const _logData = (\{.*?\});/s);
                 const parsedLog = JSON.parse(jsonMatch[1]);
     
+                const isPower = parsedLog.phases[0].dpsStats[0][1] > parsedLog.phases[0].dpsStats[0][2];
+
                 if(!parsedLog.success){
                     badLogs.push({log , reason: ERROR_MESSAGES.DPS_REPORT_NOT_A_KILL_LOG });
                     continue;
@@ -28,7 +40,7 @@ export const golemLogValidator = async (logs: string[]) => {
                     continue;
                 }
 
-                if(parsedLog.triggerID !== ENCOUNTER.STANDARD_GOLEM){
+                if(!isGolemTypeValid(parsedLog,isPower)){
                     badLogs.push({log , reason: ERROR_MESSAGES.DPS_REPORT_INVALID_GOLEM });
                     continue;
                 }
@@ -51,16 +63,36 @@ export const golemLogValidator = async (logs: string[]) => {
                     continue;
                 }
 
-                if(!areBoonsValidForProffession(parsedLog)){
-                    badLogs.push({log , reason: ERROR_MESSAGES.DPS_REPORT_INVALID_BOONS });
+                // Edge cases like minions and etc...
+
+                // Edge cases check illegal precasts
+
+                // if(!areBoonsValidForProffession(parsedLog)){
+                //     badLogs.push({log , reason: ERROR_MESSAGES.DPS_REPORT_INVALID_BOONS });
+                //     continue;
+                // }
+
+                // if(!areConditionsValidForProffession(parsedLog)){
+                //     badLogs.push({log , reason: ERROR_MESSAGES.DPS_REPORT_INVALID_CONDITIONS });
+                //     continue;
+                // }
+
+                const benchmark = computeBenchmark(parsedLog.encounterDuration,parsedLog.players[0].details.dmgDistributions[0].totalDamage);
+                if(benchmark < 0){
+                    badLogs.push({log , reason: ERROR_MESSAGES.DPS_REPORT_DPS_CALCULATION_ERROR });
                     continue;
                 }
 
-                if(!areConditionsValidForProffession(parsedLog)){
-                    badLogs.push({log , reason: ERROR_MESSAGES.DPS_REPORT_INVALID_CONDITIONS });
-                    continue;
-                }
+                const benchType = getBenchType(parsedLog);
 
+                goodLogs.push({
+                    log,
+                    isPower,
+                    benchmark,
+                    proffession: parsedLog.players[0].profession,
+                    name: parsedLog.players[0].acc,
+                    type: benchType
+                });
             }
             catch(e){
                 badLogs.push({log , reason: ERROR_MESSAGES.DPS_REPORT_INVALID });
@@ -69,15 +101,20 @@ export const golemLogValidator = async (logs: string[]) => {
         }
 
         return { goodLogs , badLogs };
-        // Check user boons ~ logJson["phases"][0]["buffsStatContainer"] / "boons" / buffMap
-        // Check golem conditions ~ logJson["phases"][0]["targetsCondiUptimes"] / "conditions" / buffMap
-        // Check DPS ~ phases[0] > duration compute to seconds.
-        // Edge cases like minions and etc...
-        // Edge cases check illegal precasts
     }
     catch(e){
-        // if (axios.isAxiosError(e)) return { error: ERROR_MESSAGES.DPS_REPORT_INVALID,log };
+        return { goodLogs: [] , badLogs: [] }
     }
+}
+
+function isGolemTypeValid(parsedLog: any, isPower: boolean){
+    if(parsedLog.triggerID === ENCOUNTER.MEDIUM_GOLEM){
+        const profession = parsedLog.players[0].profession;
+        // Specific cases for Medium Golem
+        if(isPower === false && profession === 'Mirage') return true;
+    }
+    if(parsedLog.triggerID === ENCOUNTER.STANDARD_GOLEM) return true;
+    return false;
 }
 
 function areBoonsValidForProffession(parsedLog: any){
@@ -101,4 +138,30 @@ function areConditionsValidForProffession(parsedLog: any){
     const profession = parsedLog.players[0].profession;
 
     return true;
+}
+
+function computeBenchmark(encounterDuration: string, totalDPS : number){
+    const regex = /(?:(\d+)m\s*)?(?:(\d+)s\s*)?(?:(\d+)ms)?/;
+    const match = encounterDuration.match(regex);
+    
+    if (!match) return -1;
+
+    const minutes = parseInt(match[1] || '0', 10), seconds = parseInt(match[2] || '0', 10), milliseconds = parseInt(match[3] || '0', 10);
+
+    const totalSeconds = (minutes * 60) + seconds + (milliseconds / 1000);
+    if (totalSeconds === 0) return -1;
+
+    const dps = totalDPS / totalSeconds;
+    
+    return Math.round(dps);
+}
+
+function getBenchType(parsedLog : any): benchmarkType{
+
+    const indexOfAlac = parsedLog.boons.indexOf(ENCOUNTER.ALACRITY_ID);
+    const indexOfQuick = parsedLog.boons.indexOf(ENCOUNTER.QUICKNESS_ID);
+
+    if(parsedLog.phases[0].buffsStatContainer.boonGenSelfStats[0].data[indexOfAlac].some((uptime: number) => uptime >= 50)) return 'Alacrity';
+    if(parsedLog.phases[0].buffsStatContainer.boonGenSelfStats[0].data[indexOfQuick].some((uptime: number) => uptime >= 50)) return 'Quickness';
+    return 'DPS';
 }

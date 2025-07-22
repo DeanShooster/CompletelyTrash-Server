@@ -1,8 +1,9 @@
 export enum ERROR_MESSAGES {
   DPS_REPORT_INVALID = "DPS Report Parse Error",
+  DPS_REPORT_DPS_CALCULATION_ERROR = "DPS Calculation Error",
   DPS_REPORT_NOT_A_KILL_LOG = "Not a Kill Log",
   DPS_REPORT_GOLEM_HEALTH_MISMATCH = "Golem Health Mismatch",
-  DPS_REPORT_INVALID_GOLEM = "Invalid Golem Log",
+  DPS_REPORT_INVALID_GOLEM = "Invalid Golem hitbox",
   DPS_REPORT_PLAYER_NOT_FOUND = "Player Not Found",
   DPS_REPORT_WRITS = "Writs Used",
   DPS_REPORT_INVALID_BOONS = "Invalid Boons Used",
@@ -22,6 +23,9 @@ export enum DISCORD_MESSAGES{
   COLOR = "#ff8800",
   UPDATE_COMP = "Full Clear Comp Update",
   UPLOAD_LOG_PROCESSOR = "Upload Logs Processor",
+  FAIL_BENCHMARK = "Upload Benchmark Failure",
+  BENCH_DOES_NOT_EXIST = "I'm sorry! This benchmark doesnt exist in the Database list yet.",
+  BENCH_ALREADY_EXIST = "A better or similar benchmark already exist.",
   FULL_CLEAR_LOGS = "Full Clear - Logs have been uploaded successfully.",
   THUMBNAIL_URL = "https://dean-general-archive.s3.eu-west-1.amazonaws.com/Completely+Trash/logo.png",
   PARSE_TITLE = "Parsed Logs",
@@ -33,10 +37,13 @@ export enum DISCORD_MESSAGES{
 
 export enum ENCOUNTER{
   STANDARD_GOLEM = 16199,
+  MEDIUM_GOLEM = 19645,
   GOLEM_HEALTH = 4000000,
   POWER_WRIT_200 = 33297,
   POWER_WRIT_160 = 32044,
   CONDI_WRIT_200 = 33836,
   CONDI_WRIT_160 = 31959,
-  MUSHROOM_GOLEM_BLESSING = 46970
+  MUSHROOM_GOLEM_BLESSING = 46970,
+  ALACRITY_ID = 30328,
+  QUICKNESS_ID = 1187
 }
