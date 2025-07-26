@@ -161,7 +161,7 @@ function getBenchType(parsedLog : any): benchmarkType{
     const indexOfAlac = parsedLog.boons.indexOf(ENCOUNTER.ALACRITY_ID);
     const indexOfQuick = parsedLog.boons.indexOf(ENCOUNTER.QUICKNESS_ID);
 
-    if(parsedLog.phases[0].buffsStatContainer.boonGenSelfStats[0].data[indexOfAlac].some((uptime: number) => uptime >= 50)) return 'Alacrity';
-    if(parsedLog.phases[0].buffsStatContainer.boonGenSelfStats[0].data[indexOfQuick].some((uptime: number) => uptime >= 50)) return 'Quickness';
+    if(parsedLog.phases[0].buffsStatContainer.boonGenSelfStats[0].data[indexOfAlac].some((uptime: number) => uptime >= 45)) return 'Alacrity';
+    if(parsedLog.phases[0].buffsStatContainer.boonGenSelfStats[0].data[indexOfQuick].some((uptime: number) => uptime >= 45)) return 'Quickness';
     return 'DPS';
 }
