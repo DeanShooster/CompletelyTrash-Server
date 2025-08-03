@@ -1,6 +1,6 @@
 import axios from "axios";
 
-import { ENCOUNTER, ERROR_MESSAGES } from "../../constants/enum";
+import { ENCOUNTER, ERROR_MESSAGES, SPECS } from "../../constants/enum";
 import { accountIds } from "../../constants";
 import { benchmarkType } from "../../database/models/Benchmark";
 
@@ -125,19 +125,157 @@ function areBoonsValidForProffession(parsedLog: any){
     // console.log(Object.values(parsedLog.buffMap));
 
     switch(profession){
-        case 'Berserker':{
-            // 
-            break;
+        case SPECS.Berserker: return true;
+        case SPECS.Spellbreaker: {
+            // No Perma Stability
+            return true;
         }
-    }
+        case SPECS.Bladesworn: {
+            // 10 perma boons
+            return true;
+        }
 
-    return true;
+        case SPECS.Dragonhunter: {
+            // 10 perma boons
+            return true;
+        }
+        case SPECS.Firebrand: {
+            // 10 perma boons on quickness Condi FB
+            return true;
+        }
+        case SPECS.Willbender: {
+            // 10 perma boons
+            return true;
+        }
+
+        case SPECS.Herald: return true;
+        case SPECS.Vindicator: return true;
+        case SPECS.Renegade: return true;
+
+        case SPECS.Druid: return true;
+        case SPECS.Soulbeast: return true;
+        case SPECS.Untamed: return true;
+
+        case SPECS.Daredevil: return true;
+        case SPECS.Deadeye: {
+            // 10 perma boons
+            return true;
+        }
+        case SPECS.Specter: return true;
+
+        case SPECS.Scrapper: {
+            // No Perma Stability
+            return true;
+        }
+        case SPECS.Holosmith: return true;
+        case SPECS.Mechanist: return true;
+
+        case SPECS.Scourge: return true;
+        case SPECS.Harbinger: return true;
+        case SPECS.Reaper: return true;
+
+        case SPECS.Tempest: return true;
+        case SPECS.Weaver: return true;
+        case SPECS.Catalyst: return true;
+
+        case SPECS.Chronomancer: return true;
+        case SPECS.Mirage: return true;
+        case SPECS.Virtuoso: return true;
+
+        default: return false;
+    }
 }
 
 function areConditionsValidForProffession(parsedLog: any){
     const profession = parsedLog.players[0].profession;
 
-    return true;
+    switch(profession){
+        case SPECS.Berserker: {
+            // Check if golem has boons
+            return true;
+        }
+        case SPECS.Spellbreaker: return true;
+        case SPECS.Bladesworn: {
+            // Check if golem has boons
+            return true;
+        }
+
+        case SPECS.Dragonhunter: return true;
+        case SPECS.Firebrand: return true;
+        case SPECS.Willbender: return true;
+
+        case SPECS.Herald: return true;
+        case SPECS.Vindicator: return true;
+        case SPECS.Renegade: return true;
+
+        case SPECS.Druid: return true;
+        case SPECS.Soulbeast: {
+            // 10 condis if hammer
+            return true;
+        }
+        case SPECS.Untamed: {
+            // 10 condis if hammer
+            return true;
+        }
+
+        case SPECS.Daredevil: {
+            // 10 condis
+            return true;
+        }
+        case SPECS.Deadeye: {
+            // 10 condis
+            return true;
+        }
+        case SPECS.Specter: {
+            // 10 condis
+            return true;
+        }
+
+        case SPECS.Scrapper: {
+            // 10 condis if power
+            return true;
+        }
+        case SPECS.Holosmith: {
+            // 10 condis if power
+            return true;
+        }
+        case SPECS.Mechanist: {
+            // 10 condis if power
+            return true;
+        }
+
+        case SPECS.Scourge: {
+            // 10 condis if condi
+            return true;
+        }
+        case SPECS.Harbinger: {
+            // 10 condis if condi
+            return true;
+        }
+        case SPECS.Reaper: {
+            // 10 condis if condi
+            return true;
+        }
+
+        case SPECS.Tempest: return true;
+        case SPECS.Weaver: return true;
+        case SPECS.Catalyst: return true;
+
+        case SPECS.Chronomancer: {
+            // No perma fear, slow ( on power only )
+            return true;
+        }
+        case SPECS.Mirage: {
+            // No perma fear
+            return true;
+        }
+        case SPECS.Virtuoso: {
+            // No perma fear
+            return true;
+        }
+
+        default: return false;
+    }
 }
 
 function computeBenchmark(encounterDuration: string, totalDPS : number){

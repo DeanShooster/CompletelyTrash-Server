@@ -47,3 +47,41 @@ export enum ENCOUNTER{
   ALACRITY_ID = 30328,
   QUICKNESS_ID = 1187
 }
+
+export enum SPECS {
+  Berserker = "Berserker",
+  Spellbreaker = "Spellbreaker",
+  Bladesworn = "Bladesworn",
+
+  Dragonhunter = "Dragonhunter",
+  Firebrand = "Firebrand",
+  Willbender = "Willbender",
+
+  Herald = "Herald",
+  Renegade = "Renegade",
+  Vindicator = "Vindicator",
+
+  Druid = "Druid",
+  Soulbeast = "Soulbeast",
+  Untamed = "Untamed",
+
+  Daredevil = "Daredevil",
+  Deadeye = "Deadeye",
+  Specter = "Specter",
+
+  Scrapper = "Scrapper",
+  Holosmith = "Holosmith",
+  Mechanist = "Mechanist",
+
+  Scourge = "Scourge",
+  Harbinger = "Harbinger",
+  Reaper = "Reaper",
+
+  Tempest = "Tempest",
+  Weaver = "Weaver",
+  Catalyst = "Catalyst",
+  
+  Chronomancer = "Chronomancer",
+  Mirage = "Mirage",
+  Virtuoso = "Virtuoso",
+};
