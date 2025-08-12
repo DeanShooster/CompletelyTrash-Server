@@ -2,14 +2,18 @@ export enum ERROR_MESSAGES {
   DPS_REPORT_INVALID = "DPS Report Parse Error",
   DPS_REPORT_DPS_CALCULATION_ERROR = "DPS Calculation Error",
   DPS_REPORT_NOT_A_KILL_LOG = "Not a Kill Log",
+  DPS_REPORT_NOT_A_SOLO_LOG = "Not a Solo Log",
   DPS_REPORT_GOLEM_HEALTH_MISMATCH = "Golem Health Mismatch",
   DPS_REPORT_INVALID_GOLEM = "Invalid Golem hitbox",
+  DPS_REPORT_LATE_START = "Invalid Log - Late Start",
   DPS_REPORT_PLAYER_NOT_FOUND = "Player Not Found",
   DPS_REPORT_WRITS = "Writs Used",
-  DPS_REPORT_INVALID_BOONS = "Invalid Boons Used",
-  DPS_REPORT_INVALID_CONDITIONS = "Invalid Conditions Used",
+  DPS_REPORT_INVALID_BOONS = "Inflated Log - Invalid Boons Used",
+  DPS_REPORT_INVALID_BUFFS = "Inflated Log - Invalid Buffs Used",
+  DPS_REPORT_INVALID_CONDITIONS = "Inflated Log - Invalid Condition/Boons Used on Golem",
   DPS_REPORT_MUSHROOM_BLESSING = "Mushroom Golem Blessing Used",
   DPS_REPORT_BOSS_NOT_FOUND = "Boss Not Found",
+  DPS_REPORT_THIEF_GUILD_USEAGE = "Inflated Log - Thief Guild Usage",
   BAD_REQUEST = "Bad Request",
   USER_ALREADY_EXIST = "User Already Exist",
   SERVER_ERROR = "Something Went Wrong",
@@ -45,7 +49,17 @@ export enum ENCOUNTER{
   CONDI_WRIT_160 = 31959,
   MUSHROOM_GOLEM_BLESSING = 46970,
   ALACRITY_ID = 30328,
-  QUICKNESS_ID = 1187
+  QUICKNESS_ID = 1187,
+  STABILITY_ID = 1122,
+  FEAR_ID = 791,
+  DAMAGE_BONUS_5_PERCENT_ID = 10493,
+}
+
+export const FOOD_SWAP_IDS = [25631,25632,25630,64528,10104,10105,10106,10107,10109,10110];
+
+export enum ENCOUNTER_UPTIME{
+  STABILITY_UPTIME = 35,
+  BOON_UPTIME = 45
 }
 
 export enum SPECS {

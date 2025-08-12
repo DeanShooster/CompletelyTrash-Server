@@ -1,6 +1,6 @@
 import axios from "axios";
 
-import { ENCOUNTER, ERROR_MESSAGES, SPECS } from "../../constants/enum";
+import { ENCOUNTER, ENCOUNTER_UPTIME, ERROR_MESSAGES, FOOD_SWAP_IDS, SPECS } from "../../constants/enum";
 import { accountIds } from "../../constants";
 import { benchmarkType } from "../../database/models/Benchmark";
 
@@ -35,6 +35,11 @@ export const golemLogValidator = async (logs: string[]) => {
                     continue;
                 }
 
+                if(parsedLog.players.length > 1){
+                    badLogs.push({log , reason: ERROR_MESSAGES.DPS_REPORT_NOT_A_SOLO_LOG });
+                    continue;
+                }
+
                 if(parsedLog.targets[0].health !== ENCOUNTER.GOLEM_HEALTH){
                     badLogs.push({log , reason: ERROR_MESSAGES.DPS_REPORT_GOLEM_HEALTH_MISMATCH });
                     continue;
@@ -42,6 +47,11 @@ export const golemLogValidator = async (logs: string[]) => {
 
                 if(!isGolemTypeValid(parsedLog,isPower)){
                     badLogs.push({log , reason: ERROR_MESSAGES.DPS_REPORT_INVALID_GOLEM });
+                    continue;
+                }
+
+                if(parsedLog.players[0].details.dmgDistributions[0].totalDamage < ENCOUNTER.GOLEM_HEALTH * 0.99){
+                    badLogs.push({log , reason: ERROR_MESSAGES.DPS_REPORT_LATE_START });
                     continue;
                 }
 
@@ -63,19 +73,22 @@ export const golemLogValidator = async (logs: string[]) => {
                     continue;
                 }
 
-                // Edge cases like minions and etc...
+                if(Object.values(parsedLog.buffMap).some((buff : any) => buff.id === ENCOUNTER.DAMAGE_BONUS_5_PERCENT_ID || FOOD_SWAP_IDS.includes(buff.id))){
+                    badLogs.push({log , reason: ERROR_MESSAGES.DPS_REPORT_INVALID_BUFFS });
+                    continue;
+                }
 
-                // Edge cases check illegal precasts
+                const benchType = getBenchType(parsedLog); 
 
-                // if(!areBoonsValidForProffession(parsedLog)){
-                //     badLogs.push({log , reason: ERROR_MESSAGES.DPS_REPORT_INVALID_BOONS });
-                //     continue;
-                // }
+                if(!areBoonsValidForProffession(parsedLog,isPower, (benchType === 'Quickness' || benchType === 'Alacrity'))){
+                    badLogs.push({log , reason: ERROR_MESSAGES.DPS_REPORT_INVALID_BOONS });
+                    continue;
+                }
 
-                // if(!areConditionsValidForProffession(parsedLog)){
-                //     badLogs.push({log , reason: ERROR_MESSAGES.DPS_REPORT_INVALID_CONDITIONS });
-                //     continue;
-                // }
+                if(!areConditionsValidForProffession(parsedLog,isPower)){
+                    badLogs.push({log , reason: ERROR_MESSAGES.DPS_REPORT_INVALID_CONDITIONS });
+                    continue;
+                }
 
                 const benchmark = computeBenchmark(parsedLog.encounterDuration,parsedLog.players[0].details.dmgDistributions[0].totalDamage);
                 if(benchmark < 0){
@@ -83,7 +96,12 @@ export const golemLogValidator = async (logs: string[]) => {
                     continue;
                 }
 
-                const benchType = getBenchType(parsedLog);
+                const edgeCase = isEdgeCaseDetected(parsedLog,isPower)
+
+                if(edgeCase){
+                    badLogs.push({log , reason: edgeCase });
+                    continue;
+                }
 
                 goodLogs.push({
                     log,
@@ -110,43 +128,30 @@ export const golemLogValidator = async (logs: string[]) => {
 function isGolemTypeValid(parsedLog: any, isPower: boolean){
     if(parsedLog.triggerID === ENCOUNTER.MEDIUM_GOLEM){
         const profession = parsedLog.players[0].profession;
-        // Specific cases for Medium Golem
-        if(isPower === false && profession === 'Mirage') return true;
+        if(isPower === false && profession === SPECS.Mirage) return true; // Specific cases for Medium Golem
+        return false;
     }
     if(parsedLog.triggerID === ENCOUNTER.STANDARD_GOLEM) return true;
     return false;
 }
 
-function areBoonsValidForProffession(parsedLog: any){
+function areBoonsValidForProffession(parsedLog: any,isPower: boolean, isBoon: boolean){
     const profession = parsedLog.players[0].profession;
 
-    console.log(parsedLog.phases[0].buffsStatContainer.boonStats[0].data.length);
-    console.log(parsedLog.boons.length);
-    // console.log(Object.values(parsedLog.buffMap));
+    const playerBoons = parsedLog.boons;
+    const playerBoonsUpTime = parsedLog.phases[0].buffsStatContainer.boonStats[0].data;
 
     switch(profession){
         case SPECS.Berserker: return true;
-        case SPECS.Spellbreaker: {
-            // No Perma Stability
-            return true;
-        }
-        case SPECS.Bladesworn: {
-            // 10 perma boons
-            return true;
-        }
+        case SPECS.Spellbreaker: return true;
+        case SPECS.Bladesworn: return permaBoonValidator(playerBoonsUpTime);
 
-        case SPECS.Dragonhunter: {
-            // 10 perma boons
-            return true;
-        }
+        case SPECS.Dragonhunter: return permaBoonValidator(playerBoonsUpTime);
         case SPECS.Firebrand: {
-            // 10 perma boons on quickness Condi FB
+            if(isBoon) return permaBoonValidator(playerBoonsUpTime);
             return true;
         }
-        case SPECS.Willbender: {
-            // 10 perma boons
-            return true;
-        }
+        case SPECS.Willbender: return permaBoonValidator(playerBoonsUpTime);
 
         case SPECS.Herald: return true;
         case SPECS.Vindicator: return true;
@@ -157,14 +162,15 @@ function areBoonsValidForProffession(parsedLog: any){
         case SPECS.Untamed: return true;
 
         case SPECS.Daredevil: return true;
-        case SPECS.Deadeye: {
-            // 10 perma boons
-            return true;
-        }
+        case SPECS.Deadeye: return permaBoonValidator(playerBoonsUpTime);
         case SPECS.Specter: return true;
 
         case SPECS.Scrapper: {
-            // No Perma Stability
+            if(isPower){
+                const indexOfStability = playerBoons.indexOf(ENCOUNTER.STABILITY_ID);
+                if(indexOfStability === -1) return true;
+                if(playerBoonsUpTime[indexOfStability].some((uptime: number) => uptime > ENCOUNTER_UPTIME.STABILITY_UPTIME)) return false;
+            }
             return true;
         }
         case SPECS.Holosmith: return true;
@@ -181,22 +187,30 @@ function areBoonsValidForProffession(parsedLog: any){
         case SPECS.Chronomancer: return true;
         case SPECS.Mirage: return true;
         case SPECS.Virtuoso: return true;
-
-        default: return false;
     }
 }
 
-function areConditionsValidForProffession(parsedLog: any){
+function areConditionsValidForProffession(parsedLog: any, isPower: boolean){
     const profession = parsedLog.players[0].profession;
+
+    const golemConditions = parsedLog.conditions;
+    const golemConditionsUpTime = parsedLog.phases[0].buffsStatContainer.targetsCondiUptimes[0].data;
+    const golemBoonsUptime = parsedLog.phases[0].buffsStatContainer.targetsBoonUptimes[0].data;
 
     switch(profession){
         case SPECS.Berserker: {
-            // Check if golem has boons
+            if(isPower){
+                for(const boon of golemBoonsUptime)
+                    if(boon.some((uptime: number) => uptime > 0)) return false;
+            }
             return true;
         }
         case SPECS.Spellbreaker: return true;
         case SPECS.Bladesworn: {
-            // Check if golem has boons
+            if(isPower){
+                for(const boon of golemBoonsUptime)
+                    if(boon.some((uptime: number) => uptime > 0)) return false;
+            }
             return true;
         }
 
@@ -209,51 +223,33 @@ function areConditionsValidForProffession(parsedLog: any){
         case SPECS.Renegade: return true;
 
         case SPECS.Druid: return true;
-        case SPECS.Soulbeast: {
-            // 10 condis if hammer
-            return true;
-        }
-        case SPECS.Untamed: {
-            // 10 condis if hammer
-            return true;
-        }
+        case SPECS.Soulbeast: return true;
+        case SPECS.Untamed: return true;
 
-        case SPECS.Daredevil: {
-            // 10 condis
-            return true;
-        }
-        case SPECS.Deadeye: {
-            // 10 condis
-            return true;
-        }
-        case SPECS.Specter: {
-            // 10 condis
-            return true;
-        }
+        case SPECS.Daredevil: return permaConditionValidator(golemConditionsUpTime);
+        case SPECS.Deadeye: return permaConditionValidator(golemConditionsUpTime);
+        case SPECS.Specter: return permaConditionValidator(golemConditionsUpTime);
 
         case SPECS.Scrapper: {
-            // 10 condis if power
+            if(isPower) return permaConditionValidator(golemConditionsUpTime);
             return true;
         }
         case SPECS.Holosmith: {
-            // 10 condis if power
+            if(isPower) return permaConditionValidator(golemConditionsUpTime);
             return true;
         }
         case SPECS.Mechanist: {
-            // 10 condis if power
+            if(isPower) return permaConditionValidator(golemConditionsUpTime);
             return true;
         }
 
-        case SPECS.Scourge: {
-            // 10 condis if condi
-            return true;
-        }
+        case SPECS.Scourge: return permaConditionValidator(golemConditionsUpTime);
         case SPECS.Harbinger: {
-            // 10 condis if condi
+            if(!isPower) return permaConditionValidator(golemConditionsUpTime);
             return true;
         }
-        case SPECS.Reaper: {
-            // 10 condis if condi
+        case SPECS.Reaper:{
+            if(!isPower) return permaConditionValidator(golemConditionsUpTime);
             return true;
         }
 
@@ -262,15 +258,18 @@ function areConditionsValidForProffession(parsedLog: any){
         case SPECS.Catalyst: return true;
 
         case SPECS.Chronomancer: {
-            // No perma fear, slow ( on power only )
+            if(isPower){
+                if(golemConditions.some((condition: number) => condition === ENCOUNTER.FEAR_ID)) return false;
+                return true;
+            }
             return true;
         }
         case SPECS.Mirage: {
-            // No perma fear
+            if(isPower && golemConditions.some((condition: number) => condition === ENCOUNTER.FEAR_ID)) return false;
             return true;
         }
         case SPECS.Virtuoso: {
-            // No perma fear
+            if(isPower && golemConditions.some((condition: number) => condition === ENCOUNTER.FEAR_ID)) return false;
             return true;
         }
 
@@ -299,7 +298,37 @@ function getBenchType(parsedLog : any): benchmarkType{
     const indexOfAlac = parsedLog.boons.indexOf(ENCOUNTER.ALACRITY_ID);
     const indexOfQuick = parsedLog.boons.indexOf(ENCOUNTER.QUICKNESS_ID);
 
-    if(parsedLog.phases[0].buffsStatContainer.boonGenSelfStats[0].data[indexOfAlac].some((uptime: number) => uptime >= 45)) return 'Alacrity';
-    if(parsedLog.phases[0].buffsStatContainer.boonGenSelfStats[0].data[indexOfQuick].some((uptime: number) => uptime >= 45)) return 'Quickness';
+    if(parsedLog.phases[0].buffsStatContainer.boonGenSelfStats[0].data[indexOfAlac].some((uptime: number) => uptime >= ENCOUNTER_UPTIME.BOON_UPTIME)) return 'Alacrity';
+    if(parsedLog.phases[0].buffsStatContainer.boonGenSelfStats[0].data[indexOfQuick].some((uptime: number) => uptime >= ENCOUNTER_UPTIME.BOON_UPTIME)) return 'Quickness';
     return 'DPS';
+}
+
+function permaBoonValidator(playerBoons: any){
+    let permaBoons = 0;
+    for(const boon of playerBoons){
+        if(boon.some((uptime: number) => uptime >= 99)) permaBoons++;
+    }
+    if(permaBoons > 10) return false;
+    return true;
+}
+
+function permaConditionValidator(golemConditions: any){
+    let permaConditions = 0;
+    for(const condition of golemConditions){
+        if(condition.some((uptime: number) => uptime >= 99)) permaConditions++;
+    }
+    if(permaConditions > 10) return false;
+    return true;
+}
+
+function isEdgeCaseDetected(parsedLog: any, isPower: boolean){
+    const profession = parsedLog.players[0].profession;
+
+    switch(profession){
+        case SPECS.Daredevil:{
+            if(!isPower && parsedLog.players[0].minions.length > 0) return ERROR_MESSAGES.DPS_REPORT_THIEF_GUILD_USEAGE;
+            return null;
+        }
+        default: return null;
+    }
 }
