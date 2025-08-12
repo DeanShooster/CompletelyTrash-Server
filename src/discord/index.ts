@@ -17,8 +17,7 @@ export const initDiscordBot = async () => {
     discordClient.login(process.env.DISCORD_BOT_TOKEN);
 
     discordClient.on("messageCreate", async (message) => {
-        // if(message.channelId !== process.env.DISCORD_BENCHMARK_ID && message.channelId !== process.env.DISCORD_LN_BENCHMARK_ID) return;
-        if(message.channelId !== '1401502806329921637') return; // TESTING CHANNEL
+        if(message.channelId !== process.env.DISCORD_BENCHMARK_ID && message.channelId !== process.env.DISCORD_LN_BENCHMARK_ID) return;
         
         try{
             const urls = message.content.match(isDpsReportUrl);
@@ -37,7 +36,7 @@ export const initDiscordBot = async () => {
                             benchmark.players[playerIndex].log = goodLog.log;
                         } else await message.reply(DISCORD_MESSAGES.BENCH_ALREADY_EXIST);
                     }
-                    // await benchmark.save();
+                    await benchmark.save();
                 }else{
                     await message.react('❓');
                     await message.reply(DISCORD_MESSAGES.BENCH_DOES_NOT_EXIST);
