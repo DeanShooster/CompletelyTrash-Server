@@ -18,7 +18,7 @@ export const initDiscordBot = async () => {
 
     discordClient.on("messageCreate", async (message) => {
         if(message.channelId !== process.env.DISCORD_BENCHMARK_ID && message.channelId !== process.env.DISCORD_LN_BENCHMARK_ID) return;
-        
+
         try{
             const urls = message.content.match(isDpsReportUrl);
             if (!urls || urls.length === 0) return;

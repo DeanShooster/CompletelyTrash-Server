@@ -321,12 +321,34 @@ function permaConditionValidator(golemConditions: any){
     return true;
 }
 
+function hasInvalidMinions(parsedLog: any){
+    if(parsedLog.players[0].minions.some((minion: any) => minion.name === ENCOUNTER.EMBER_POWDER_MINION || minion.name === ENCOUNTER.RAVEN_MINION || minion.name === ENCOUNTER.CANNON_MINION
+    || minion.name === ENCOUNTER.JADE_MINION || minion.name === ENCOUNTER.MORTAR_MINION || minion.name === ENCOUNTER.TURRET_MINION || minion.name === ENCOUNTER.MELANDRU_MINION || minion.name === ENCOUNTER.SUNSPEAR_MINION
+    )) 
+    return true;
+    return false;
+}
+
 function isEdgeCaseDetected(parsedLog: any, isPower: boolean){
     const profession = parsedLog.players[0].profession;
+
+    if(hasInvalidMinions(parsedLog)) return ERROR_MESSAGES.DPS_REPORT_INVALID_MINION;
 
     switch(profession){
         case SPECS.Daredevil:{
             if(!isPower && parsedLog.players[0].minions.length > 0) return ERROR_MESSAGES.DPS_REPORT_THIEF_GUILD_USEAGE;
+            return null;
+        }
+        case SPECS.Catalyst:{
+            if(parsedLog.players[0].minions.some((minion: any) => minion.name.includes("Lesser"))) return ERROR_MESSAGES.DPS_REPORT_ELEMENTALIST_MINIONS;
+            return null;
+        }
+        case SPECS.Tempest:{
+            if(parsedLog.players[0].minions.some((minion: any) => minion.name.includes("Lesser"))) return ERROR_MESSAGES.DPS_REPORT_ELEMENTALIST_MINIONS;
+            return null;
+        }
+        case SPECS.Weaver:{
+            if(parsedLog.players[0].minions.some((minion: any) => minion.name.includes("Lesser"))) return ERROR_MESSAGES.DPS_REPORT_ELEMENTALIST_MINIONS;
             return null;
         }
         default: return null;
