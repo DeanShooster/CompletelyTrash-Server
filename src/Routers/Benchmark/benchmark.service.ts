@@ -351,6 +351,10 @@ function isEdgeCaseDetected(parsedLog: any, isPower: boolean){
             if(parsedLog.players[0].minions.some((minion: any) => minion.name.includes("Lesser"))) return ERROR_MESSAGES.DPS_REPORT_ELEMENTALIST_MINIONS;
             return null;
         }
+        case SPECS.Willbender:{
+            if(Object.values(parsedLog.buffMap).some((buff: any) => buff.name === "Tome of Justice")) return ERROR_MESSAGES.DPS_REPORT_BUGGED_SPEC;
+            return null;
+        }
         default: return null;
     }
 }

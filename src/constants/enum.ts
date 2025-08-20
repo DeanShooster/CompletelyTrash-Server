@@ -16,6 +16,7 @@ export enum ERROR_MESSAGES {
   DPS_REPORT_THIEF_GUILD_USEAGE = "Inflated Log - Thief Guild Detected",
   DPS_REPORT_INVALID_MINION = "Inflated Log - Invalid Minion Detected",
   DPS_REPORT_ELEMENTALIST_MINIONS = "Inflated Log - Elementalist Lesser Minions Detected",
+  DPS_REPORT_BUGGED_SPEC = "Invalid Log - Bugged Specialization Detected",
   BAD_REQUEST = "Bad Request",
   USER_ALREADY_EXIST = "User Already Exist",
   SERVER_ERROR = "Something Went Wrong",
