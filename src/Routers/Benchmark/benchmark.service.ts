@@ -362,6 +362,14 @@ function isEdgeCaseDetected(parsedLog: any, isPower: boolean){
             if(Object.values(parsedLog.buffMap).some((buff: any) => buff.name === "Tome of Justice")) return ERROR_MESSAGES.DPS_REPORT_BUGGED_SPEC;
             return null;
         }
+        case SPECS.Untamed:{
+            if(Object.values(parsedLog.buffMap).some((buff: any) => buff.name === "Ferocious")) return ERROR_MESSAGES.DPS_REPORT_BUGGED_SPEC;
+            return null;
+        }
+        case SPECS.Druid:{
+            if(Object.values(parsedLog.buffMap).some((buff: any) => buff.name === "Ferocious")) return ERROR_MESSAGES.DPS_REPORT_BUGGED_SPEC;
+            return null;
+        }
         default: return null;
     }
 }
