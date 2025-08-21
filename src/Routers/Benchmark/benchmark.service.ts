@@ -359,15 +359,23 @@ function isEdgeCaseDetected(parsedLog: any, isPower: boolean){
             return null;
         }
         case SPECS.Willbender:{
-            if(Object.values(parsedLog.buffMap).some((buff: any) => buff.name === "Tome of Justice")) return ERROR_MESSAGES.DPS_REPORT_BUGGED_SPEC;
+            if(Object.values(parsedLog.buffMap).some((buff: any) => buff.name === ENCOUNTER.TOME_OF_JUSTICE)) return ERROR_MESSAGES.DPS_REPORT_BUGGED_SPEC;
             return null;
         }
         case SPECS.Untamed:{
-            if(Object.values(parsedLog.buffMap).some((buff: any) => buff.name === "Ferocious")) return ERROR_MESSAGES.DPS_REPORT_BUGGED_SPEC;
+            if(Object.values(parsedLog.buffMap).some((buff: any) => buff.name === ENCOUNTER.FEROCIOUS_SLB)) return ERROR_MESSAGES.DPS_REPORT_BUGGED_SPEC;
             return null;
         }
         case SPECS.Druid:{
-            if(Object.values(parsedLog.buffMap).some((buff: any) => buff.name === "Ferocious")) return ERROR_MESSAGES.DPS_REPORT_BUGGED_SPEC;
+            if(Object.values(parsedLog.buffMap).some((buff: any) => buff.name === ENCOUNTER.FEROCIOUS_SLB)) return ERROR_MESSAGES.DPS_REPORT_BUGGED_SPEC;
+            return null;
+        }
+        case SPECS.Scrapper:{
+            if(parsedLog.players[0].minions.some((minion: any) => minion.name.includes(ENCOUNTER.MECHANIST))) return ERROR_MESSAGES.DPS_REPORT_BUGGED_SPEC;
+            return null;
+        }
+        case SPECS.Holosmith:{
+            if(parsedLog.players[0].minions.some((minion: any) => minion.name.includes(ENCOUNTER.MECHANIST))) return ERROR_MESSAGES.DPS_REPORT_BUGGED_SPEC;
             return null;
         }
         default: return null;

@@ -75,7 +75,10 @@ export enum ENCOUNTER{
   DRUID_MINION = "Druid Spirit",
   SNOW_WURM = "Snow Wurm",
   SEED_TURRET = "Seed Turret",
-  REAPER_OF_GRENTH = "Reaper of Grenth"
+  REAPER_OF_GRENTH = "Reaper of Grenth",
+  MECHANIST = "Jade Mech CJ-1",
+  FEROCIOUS_SLB = "Ferocious",
+  TOME_OF_JUSTICE = "Tome of Justice"
 }
 
 export const FOOD_SWAP_IDS = [25631,25632,25630,64528,10104,10105,10106,10107,10109,10110];
