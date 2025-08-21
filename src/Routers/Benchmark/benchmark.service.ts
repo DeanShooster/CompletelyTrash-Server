@@ -324,15 +324,22 @@ function permaConditionValidator(golemConditions: any){
 function hasInvalidMinions(parsedLog: any){
     if(parsedLog.players[0].minions.some((minion: any) => minion.name === ENCOUNTER.EMBER_POWDER_MINION || minion.name === ENCOUNTER.RAVEN_MINION || minion.name === ENCOUNTER.CANNON_MINION
     || minion.name === ENCOUNTER.JADE_MINION || minion.name === ENCOUNTER.MORTAR_MINION || minion.name === ENCOUNTER.TURRET_MINION || minion.name === ENCOUNTER.MELANDRU_MINION || minion.name === ENCOUNTER.SUNSPEAR_MINION
-    )) 
+    || minion.name === ENCOUNTER.HOUND_MINION || minion.name === ENCOUNTER.BLOOD_LEGION_MINION || minion.name === ENCOUNTER.WOLF_MINION || minion.name === ENCOUNTER.SLYVAN_HOUND
+    || minion.name === ENCOUNTER.GOLEM_MINION || minion.name === ENCOUNTER.DRUID_MINION || minion.name === ENCOUNTER.SNOW_WURM || minion.name === ENCOUNTER.SEED_TURRET
+    ))
     return true;
     return false;
+}
+
+function hasUsedRacialEliteSkill(parsedLog: any){
+    return Object.values(parsedLog.skillMap).some((skill : any) => skill.name === ENCOUNTER.ARTILLERY_BARRAGE || skill.name === ENCOUNTER.CHARRZOOKA || skill.name === ENCOUNTER.REAPER_OF_GRENTH);
 }
 
 function isEdgeCaseDetected(parsedLog: any, isPower: boolean){
     const profession = parsedLog.players[0].profession;
 
     if(hasInvalidMinions(parsedLog)) return ERROR_MESSAGES.DPS_REPORT_INVALID_MINION;
+    if(hasUsedRacialEliteSkill(parsedLog)) return ERROR_MESSAGES.DPS_REPORT_RACIAL_ELITE_SKILL;
 
     switch(profession){
         case SPECS.Daredevil:{

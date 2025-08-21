@@ -17,6 +17,7 @@ export enum ERROR_MESSAGES {
   DPS_REPORT_INVALID_MINION = "Inflated Log - Invalid Minion Detected",
   DPS_REPORT_ELEMENTALIST_MINIONS = "Inflated Log - Elementalist Lesser Minions Detected",
   DPS_REPORT_BUGGED_SPEC = "Invalid Log - Bugged Specialization Detected",
+  DPS_REPORT_RACIAL_ELITE_SKILL = "Inflated Log - Racial Elite Skill Detected",
   BAD_REQUEST = "Bad Request",
   USER_ALREADY_EXIST = "User Already Exist",
   SERVER_ERROR = "Something Went Wrong",
@@ -63,7 +64,18 @@ export enum ENCOUNTER{
   MORTAR_MINION = "Mortar",
   TURRET_MINION = "Seed Turret",
   MELANDRU_MINION = "Melandru's Stalker",
-  SUNSPEAR_MINION = "Sunspear Paragon Support"
+  SUNSPEAR_MINION = "Sunspear Paragon Support",
+  BLOOD_LEGION_MINION = "Blood Legion Marksman",
+  HOUND_MINION = "Hound of Balthazar",
+  WOLF_MINION = "Mistfire Wolf",
+  ARTILLERY_BARRAGE = "Artillery Barrage",
+  CHARRZOOKA = "Charrzooka",
+  SLYVAN_HOUND = "Sylvan Hound",
+  GOLEM_MINION = "SYN-D111",
+  DRUID_MINION = "Druid Spirit",
+  SNOW_WURM = "Snow Wurm",
+  SEED_TURRET = "Seed Turret",
+  REAPER_OF_GRENTH = "Reaper of Grenth"
 }
 
 export const FOOD_SWAP_IDS = [25631,25632,25630,64528,10104,10105,10106,10107,10109,10110];

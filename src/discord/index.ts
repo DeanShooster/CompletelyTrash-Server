@@ -36,6 +36,10 @@ export const initDiscordBot = async () => {
                             benchmark.players[playerIndex].log = goodLog.log;
                         } else await message.reply(DISCORD_MESSAGES.BENCH_ALREADY_EXIST);
                     }
+                    if(goodLog.benchmark > 100){
+                        const user = await message.client.users.fetch(process.env.DISCORD_DEAN_ID || "");
+                        await user.send(`Above 100% benchmark: ${goodLog.name} in ${goodLog.proffession} (${goodLog.type})! Benchmark: ${goodLog.benchmark}`);
+                    }
                     await benchmark.save();
                 }else{
                     await message.react('❓');
