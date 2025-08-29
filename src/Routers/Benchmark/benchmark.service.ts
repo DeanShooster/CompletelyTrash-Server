@@ -276,6 +276,7 @@ function areConditionsValidForProffession(parsedLog: any, isPower: boolean){
 }
 
 function getBenchType(parsedLog : any): benchmarkType{
+    if(parsedLog.players[0].profession === SPECS.Reaper) return 'DPS';
     const alacUptime = parsedLog.players[0].buffUptimes.find((buff: any) => buff.id === ENCOUNTER.ALACRITY_ID)?.buffData[0];
     const quickUptime = parsedLog.players[0].buffUptimes.find((buff: any) => buff.id === ENCOUNTER.QUICKNESS_ID)?.buffData[0];
 

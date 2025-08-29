@@ -26,7 +26,6 @@ export const initDiscordBot = async () => {
             const {goodLogs, badLogs} = await golemLogValidator(urls);
 
             for(const goodLog of goodLogs){
-                console.log(goodLog)
                 const benchmark = await Benchmark.findOne({proffessionId: Proffessions.indexOf(goodLog.proffession) ,isPower: goodLog.isPower , type: goodLog.type});
                 if(benchmark){
                     const playerIndex = benchmark.players.findIndex(player => player.name === goodLog.name);
