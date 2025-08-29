@@ -1,6 +1,7 @@
 import { DMChannel, NewsChannel, TextChannel, ThreadChannel } from "discord.js";
 
 export const clientURL = "https://completely-trash.com";
+export const dpsReportURL =  "https://dps.report/getJson?permalink=";
 
 export type DiscordTextChannel = TextChannel | DMChannel | NewsChannel | ThreadChannel;
 
@@ -76,6 +77,6 @@ export const wingEncounterMapping: string[][] = [
 export const accountIds: string[] = [
   'Verone.7652','Carphunter.6410', 'Pelda.1896', 'Ssalg.1205', 'Unholy Mox.1569', 
   'Dean.3056', 'Steiner.8365', 'MoonMoon.3826', 'rikje.8315', 'pancakecookie.1357',
-  'Vertox.3697','MrnousakCz.9650', 'Cemox.7089', 'Musaceae.1832', 'Hype.5628', 
+  'Vertox.3697','MrnousakCz.9650', 'Cemox.7089', 'Hype.5628', 
   'RoyalWabbit.8359', 'Canuqy.1940','Nightmare.5026',"Helli.1279", 'Toilet.8462'
 ];

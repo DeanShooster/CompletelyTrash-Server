@@ -26,6 +26,7 @@ export const initDiscordBot = async () => {
             const {goodLogs, badLogs} = await golemLogValidator(urls);
 
             for(const goodLog of goodLogs){
+                console.log(goodLog)
                 const benchmark = await Benchmark.findOne({proffessionId: Proffessions.indexOf(goodLog.proffession) ,isPower: goodLog.isPower , type: goodLog.type});
                 if(benchmark){
                     const playerIndex = benchmark.players.findIndex(player => player.name === goodLog.name);
@@ -36,9 +37,9 @@ export const initDiscordBot = async () => {
                             benchmark.players[playerIndex].log = goodLog.log;
                         } else await message.reply(DISCORD_MESSAGES.BENCH_ALREADY_EXIST);
                     }
-                    if(goodLog.benchmark > 100){
+                    if(goodLog.benchmark > benchmark.benchNumber){
                         const user = await message.client.users.fetch(process.env.DISCORD_DEAN_ID || "");
-                        await user.send(`Above 100% benchmark: ${goodLog.name} in ${goodLog.proffession} (${goodLog.type})! Benchmark: ${goodLog.benchmark}`);
+                        await user.send(`**__Above 100% benchmark__**\n **${goodLog.name}** as **${goodLog.proffession}** ( ${goodLog.type} ) !\nBenchmark Number: **${goodLog.benchmark}**`);
                     }
                     await benchmark.save();
                 }else{

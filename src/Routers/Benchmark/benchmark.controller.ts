@@ -6,6 +6,9 @@ import Benchmark from "../../database/models/Benchmark";
 
 import { routing } from "..";
 import { AdminAuth } from "../../middlewares/Authentication";
+import { ServerError } from "../../middlewares/ErrorHandler";
+import { ERROR_MESSAGES } from "../../constants/enum";
+import { dpsReportURL } from "../../constants";
 
 const router = express.Router();
 
@@ -23,14 +26,10 @@ router.get(`${routing.benchmark.baseURL}`, async (req: Request, res: Response, n
 
 // --------------------------------------------------------------- POST REQUESTS --------------------------------------------------------------- //
 
-router.post(`${routing.benchmark.baseURL}`,AdminAuth, async (req: Request, res: Response, next: NextFunction) => {
+router.post(`${routing.benchmark.baseURL}`, async (req: Request, res: Response, next: NextFunction) => {
     try{
-        const response = await axios.get(req.body.log);
-        const _logData = response.data;
-        const jsonMatch = _logData.match(/const _logData = (\{.*?\});/s);
-        const parsedLog = JSON.parse(jsonMatch[1]);
-
-        res.send(parsedLog);
+        const response = await axios.get(`${dpsReportURL}${req.body.log}`);
+        res.send(response.data);
     }
     catch(e) {
         next(e);
@@ -51,6 +50,26 @@ router.put(`${routing.benchmark.baseURL}`, AdminAuth,  async (req: Request, res:
             await newBenchmark.save();
         }
         res.send({name});
+    }
+    catch(e){
+        next(e);
+    }
+});
+
+// --------------------------------------------------------------- DELETE REQUESTS --------------------------------------------------------------- //
+
+router.delete(`${routing.benchmark.baseURL}`, AdminAuth ,async (req: Request, res: Response, next: NextFunction) => {
+    try{
+        const { name, fullDelete } = req.body;
+        if(fullDelete){
+            const benchmark = await Benchmark.findOneAndDelete({ name });
+            if(!benchmark) return next(new ServerError(ERROR_MESSAGES.NOT_FOUND,404,routing.benchmark.baseURL));
+            res.send({benchmark});
+        }else{
+            const benchmark = await Benchmark.findOneAndUpdate({ name },{ $set: { players: [] } },{ new: true });
+            if(!benchmark) return next(new ServerError(ERROR_MESSAGES.NOT_FOUND,404,routing.benchmark.baseURL));
+            res.send({benchmark});
+        }
     }
     catch(e){
         next(e);
